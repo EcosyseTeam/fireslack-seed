@@ -87,9 +87,26 @@ angular
       .state('channels.create', {
         url: '/create',
         controller: 'ChannelsCtrl as channelsCtrl',
-        templateUrl: 'channels/create.html',
+        templateUrl: 'channels/create.html'
 
       })
+
+      .state('channels.messages', {
+          url: '/{channelId}/messages',
+          templateUrl: 'channels/messages.html',
+          controller: 'MessagesCtrl as messagesCtrl',
+          resolve: {
+            messages: function($stateParams, Messages){
+              // console.log('message resolve');
+              return Messages.forChannel($stateParams.channelId).$loaded();
+            },
+            channelName: function($stateParams, channels){
+              return '#'+channels.$getRecord($stateParams.channelId).name;
+            }
+            
+          }
+      })
+
 
       .state('profile', {
         url: '/profile',
@@ -108,8 +125,18 @@ angular
             });
           }
         }
-      })
+      });
+      
+      // .state('channels.create', {
+      //   url: '/create',
+      //   templateUrl: 'channels/create.html',
+      //   controller: 'ChannelsCtrl as channelsCtrl'
+      // })
 
     $urlRouterProvider.otherwise('/');
-  })
+
+    })
+  
   .constant('FirebaseUrl', 'https://runmydna-chat.firebaseio.com/');
+
+
